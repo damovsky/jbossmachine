@@ -17,9 +17,9 @@ RUN mkdir -p /opt/oracle /oracle && \
 	chown oracle.oinstall /opt/oracle /oracle
 
 
-ADD oracleClient/linux.x64_11gR2_client.zip /tmp/install/linux.x64_11gR2_client.zip
-ADD oracleClient/client_install.rsp /tmp/install/client_install.rsp
-ADD oracleClient/install.sh /tmp/install/install.sh
+ADD linux.x64_11gR2_client.zip /tmp/install/linux.x64_11gR2_client.zip
+ADD client_install.rsp /tmp/install/client_install.rsp
+ADD install.sh /tmp/install/install.sh
 RUN chmod +x /tmp/install/install.sh
 RUN cd /tmp/install && unzip /tmp/install/linux.x64_11gR2_client.zip
 RUN chown -R oracle:oinstall /tmp/install/
