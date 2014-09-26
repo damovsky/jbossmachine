@@ -5,36 +5,34 @@ RUN yum -y install binutils compat-libcap1 compat-libstdc++-33 compat-libstdc++-
 
 
 
-ADD sysctl.conf /etc/sysctl.conf
-RUN echo "oracle soft stack 10240" >> /etc/security/limits.conf
-RUN echo "session     required    pam_limits.so" >> /etc/pam.d/login
+ADD sysctl.conf /etc/sysctl.conf && \
+	echo "oracle soft stack 10240" >> /etc/security/limits.conf && \
+	echo "session     required    pam_limits.so" >> /etc/pam.d/login
 
 # create user and group for oracle
-RUN groupadd -g 54321 oinstall && groupadd -g 54322 dba
-RUN userdel oracle && rm -rf /home/oracle && rm /var/spool/mail/oracle
-RUN useradd -m -u 54321 -g oinstall -G dba oracle
-RUN echo "oracle:oracle" | chpasswd
-
-RUN mkdir -p /opt/oracle /oracle && \
+RUN groupadd -g 54321 oinstall && \
+	groupadd -g 54322 dba && \
+	userdel oracle && \
+	rm -rf /home/oracle && \
+	rm /var/spool/mail/oracle && \
+	useradd -m -u 54321 -g oinstall -G dba oracle && \
+	echo "oracle:oracle" | chpasswd && \
+	mkdir -p /opt/oracle /oracle && \
 	chown oracle.oinstall /opt/oracle /oracle
 
 
 ADD linux.x64_11gR2_client.zip /tmp/install/linux.x64_11gR2_client.zip
-
 ADD client_install.rsp /tmp/install/client_install.rsp
 ADD install.sh /tmp/install/install.sh
-RUN chmod +x /tmp/install/install.sh
-RUN cd /tmp/install && unzip /tmp/install/linux.x64_11gR2_client.zip
-RUN chown -R oracle:oinstall /tmp/install/
-RUN su -s /bin/bash oracle -c "/tmp/install/install.sh"
 
-
-RUN /oracle/oinventory/orainstRoot.sh
-RUN /oracle/app/ohome/root.sh
-
-
-RUN rm -Rf /tmp/install
-
+RUN chmod +x /tmp/install/install.sh && \
+	cd /tmp/install && \
+	unzip /tmp/install/linux.x64_11gR2_client.zip && \
+	chown -R oracle:oinstall /tmp/install/ && \
+	su -s /bin/bash oracle -c "/tmp/install/install.sh" && \
+	/oracle/oinventory/orainstRoot.sh && \
+	/oracle/app/ohome/root.sh && \
+	rm -Rf /tmp/install
 
 ENV ORACLE_HOME /oracle/app/ohome/
 ENV PATH $PATH:$ORACLE_HOME/bin
