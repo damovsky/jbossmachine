@@ -28,7 +28,7 @@ RUN cd /tmp/install && \
 ENV ORACLE_HOME /oracle/app/ohome/
 ENV PATH $PATH:$ORACLE_HOME/bin
 ENV LD_LIBRARY_PATH $ORACLE_HOME/lib
-ENV TNS_ADMIN /usr/lib/oracle/11.2/client64/network/admin
+ENV TNS_ADMIN $ORACLE_HOME/network/admin
 
 # Define working directory.
 WORKDIR /tmp
