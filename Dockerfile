@@ -1,5 +1,5 @@
 # Pull base image.
-FROM wscherphof/oracle-linux-7
+FROM damovsky/oracleclient:11gR2Client
 
 RUN yum -y install binutils compat-libcap1 compat-libstdc++-33 compat-libstdc++-33.i686 gcc gcc-c++ glibc.i686 glibc glibc-devel glibc-devel.i686 ksh libgcc.i686 libgcc libstdc++ libstdc++.i686 libstdc++-devel libstdc++-devel.i686 libaio libaio.i686 libaio-devel libaio-devel.i686 libXext libXext.i686 libXtst libXtst.i686 libX11 libX11.i686 libXau libXau.i686 libxcb libxcb.i686 libXi libXi.i686 make sysstat vte3 smartmontools unzip sudo wget
 
@@ -20,38 +20,8 @@ RUN cd /tmp/install && wget http://sourceforge.net/projects/jboss/files/JBoss/JB
 RUN mkdir /opt/jboss && unzip /tmp/install/jboss-5.1.0.GA.zip -d /opt/jboss/
 
 
-ADD sysctl.conf /etc/sysctl.conf
-RUN echo "oracle soft stack 10240" >> /etc/security/limits.conf
-RUN echo "session     required    pam_limits.so" >> /etc/pam.d/login
 
-# create user and group for oracle
-RUN groupadd -g 54321 oinstall && groupadd -g 54322 dba
-RUN userdel oracle && rm -rf /home/oracle && rm /var/spool/mail/oracle
-RUN useradd -m -u 54321 -g oinstall -G dba oracle
-RUN echo "oracle:oracle" | chpasswd
-
-RUN mkdir -p /opt/oracle /oracle && \
-	chown oracle.oinstall /opt/oracle /oracle
-
-
-ADD linux.x64_11gR2_client.zip /tmp/install/linux.x64_11gR2_client.zip
-
-#RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-database_111060_linx8664-cookie;" http://download.oracle.#com/otn/linux/oracle11g/R2/linux.x64_11gR2_client.zip
-
-
-ADD client_install.rsp /tmp/install/client_install.rsp
-ADD install.sh /tmp/install/install.sh
-RUN chmod +x /tmp/install/install.sh
-RUN cd /tmp/install && unzip /tmp/install/linux.x64_11gR2_client.zip
-RUN chown -R oracle:oinstall /tmp/install/
-RUN su -s /bin/bash oracle -c "/tmp/install/install.sh"
-
-
-RUN /oracle/oinventory/orainstRoot.sh
-RUN /oracle/app/ohome/root.sh
-
-
-#RUN rm -Rf /tmp/install
+RUN rm -Rf /tmp/install
 
 
 ENV ORACLE_HOME /oracle/app/ohome/
